@@ -1,0 +1,313 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-4789-9abc-airplan000001",
+    "name": "Airplan API",
+    "description": "مدیریت ناوگان هواپیما و خلبانان با احراز هویت Sanctum Bearer Token",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000/api/v1"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "pilotId",
+      "value": "1"
+    },
+    {
+      "key": "airplaneId",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "01 - احراز هویت",
+      "item": [
+        {
+          "name": "ثبت خلبان (token میدهد)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Captain Raya\",\n  \"license_number\": \"PIL-1001\",\n  \"phone\": \"09120000000\",\n  \"password\": \"secret123\",\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pilot/store",
+              "host": ["{{baseUrl}}"],
+              "path": ["pilot", "store"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    pm.collectionVariables.set('token', pm.response.json().token);",
+                  "    console.log('token ذخیره شد');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "ورود خلبان (token میدهد)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"license_number\": \"PIL-1001\",\n  \"password\": \"secret123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pilot/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["pilot", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    pm.collectionVariables.set('token', pm.response.json().token);",
+                  "    console.log('token ذخیره شد');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "response": []
+        },
+        {
+          "name": "خلبان فعلی (تست token)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pilot/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["pilot", "me"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - خلبانها ( نیاز به token )",
+      "item": [
+        {
+          "name": "لیست خلبانها",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pilot",
+              "host": ["{{baseUrl}}"],
+              "path": ["pilot"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "نمایش یک خلبان",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pilot/{{pilotId}}/show",
+              "host": ["{{baseUrl}}"],
+              "path": ["pilot", "{{pilotId}}", "show"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ویرایش خلبان",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Captain Raya Updated\",\n  \"license_number\": \"PIL-1001\",\n  \"phone\": \"09129999999\",\n  \"status\": \"inactive\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/pilot/{{pilotId}}/update",
+              "host": ["{{baseUrl}}"],
+              "path": ["pilot", "{{pilotId}}", "update"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "حذف خلبان",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/pilot/{{pilotId}}/destroy",
+              "host": ["{{baseUrl}}"],
+              "path": ["pilot", "{{pilotId}}", "destroy"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - ناوگان هواپیما ( نیاز به token )",
+      "item": [
+        {
+          "name": "لیست هواپیماها",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/airplane",
+              "host": ["{{baseUrl}}"],
+              "path": ["airplane"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ثبت هواپیما",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Boeing 737\",\n  \"model\": \"737-800\",\n  \"registration_code\": \"EP-ARA\",\n  \"capacity\": 189,\n  \"status\": \"active\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/airplane/store",
+              "host": ["{{baseUrl}}"],
+              "path": ["airplane", "store"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "نمایش یک هواپیما",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/airplane/{{airplaneId}}/show",
+              "host": ["{{baseUrl}}"],
+              "path": ["airplane", "{{airplaneId}}", "show"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "ویرایش هواپیما",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Boeing 737 NG\",\n  \"model\": \"737-800\",\n  \"registration_code\": \"EP-ARA\",\n  \"capacity\": 189,\n  \"status\": \"inactive\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/airplane/{{airplaneId}}/update",
+              "host": ["{{baseUrl}}"],
+              "path": ["airplane", "{{airplaneId}}", "update"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "حذف هواپیما",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/airplane/{{airplaneId}}/destroy",
+              "host": ["{{baseUrl}}"],
+              "path": ["airplane", "{{airplaneId}}", "destroy"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
